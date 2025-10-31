@@ -152,7 +152,9 @@ def is_boundary_incoming_link(src: Node, dst: Node) -> bool:
 
 def signal_phase(t: int) -> list:
     """Given the current time tick and node, return the list of directions that
-    are green for the current signal phase."""
+    are green for the current signal phase.
+    --- Removed node parameter because it was pointless  -Arek Gubala
+    """
     tt = t % CYCLE_TOTAL
     # Assume east-west is green
     green_axis = [EAST, WEST]
@@ -168,9 +170,6 @@ def add_travel_time(base=BASE_TRAVEL_T):
     """Place holder method so that we can introduce random jitter in
     addition to the base time."""
     return base
-
-
-
 
 
 # in_transit = dict()  # key -> value: {(u,v) -> Car, remaining time}
@@ -348,7 +347,19 @@ sum_queue = 0
 # simulation loop method
 
 def simulate_traffic():
+    """
+    Simulates traffic and prints out statistics.
+
+    Run a simulation lasting TOTAL_TICKS over an NxN grid of roads, with
+    stopped and moving traffic. Traffic in transit moves in transit queues (roads). As
+    cars approach intersections, they move from transit to stopped queues, and will cross
+    to the next one if space allows it. Every node and it's incoming traffic is checked once
+    per tick. 
+    In directions where traffic is stopped, the amount of stopped cars per light is recorded.
+    Nodes with links on the boundaries are checked once per tick to randomly spawn a car.
+    """
     global completed, sum_tt, queue_samples, sum_queue
+    completed, sum_tt, queue_samples, sum_queue = 0, 0, 0, 0
     current_tick = 0
 
     # main simulation loop
